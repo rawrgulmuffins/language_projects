@@ -7,12 +7,10 @@ import os
 command_name = 'webserver_test_application'
 
 with open('README.md') as file:
-        long_description = file.read()
+    long_description = file.read()
 
-with open('dev_requirements.txt') as file:
-    tests_require = [dep.strip() for dep in file.readlines()]
-
-required_packages = []
+with open('requirements.txt') as file:
+    required_packages = [dep.strip() for dep in file.readlines()]
 
 setup(name='bugs_to_githubs',
       version='0.0.1',
