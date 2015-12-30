@@ -1,10 +1,11 @@
 import unittest
 import subprocess
 
-class TestInitialization(unittest.TestCase):
+class CompilerTestBase(unittest.TestCase):
+    """Contains the code that actually runs tests and reports their results.
+    """
 
-    def setUp(self):
-        self.run_compiler_string = "./cradle"
+    run_compiler_string = "./cradle"
 
     def clean_formatting(self, raw_text):
         """Simple string cleaner that ignores all prior whitespace and left
@@ -36,12 +37,62 @@ class TestInitialization(unittest.TestCase):
         print("------- end ----------")
         self.assertEqual(actual_assembly, expected_assembly)
 
+class TestInitialization(CompilerTestBase):
+
     def test_single_literal(self):
         test_program = "1"
         expected_assembly = b"""
-        mov %eax, $1
+        mov %eax, 1
         """
         self.run_test(test_program, expected_assembly)
+
+    def test_blank_program(self):
+        test_program = ""
+        expected_assembly = b""""""
+        self.run_test(test_program, expected_assembly)
+
+class TestArithmetic(CompilerTestBase):
+
+    def test_addition_no_space(self):
+        test_program = "1+2"
+        # Need to remember that mov is dest, source
+        expected_assembly = b"""
+        mov %eax, 1
+        mov %ebx, %eax
+        mov %eax, 2
+        add %eax, %ebx"""
+        self.run_test(test_program, expected_assembly)
+
+    def test_addition_spaces(self):
+        test_program = "1+2"
+        # Need to remember that mov is dest, source
+        expected_assembly = b"""
+        mov %eax, 1
+        mov %ebx, %eax
+        mov %eax, 2
+        add %eax, %ebx"""
+        self.run_test(test_program, expected_assembly)
+
+    def test_subtraction_no_space(self):
+        test_program = "1+2"
+        # Need to remember that mov is dest, source
+        expected_assembly = b"""
+        mov %eax, 1
+        mov %ebx, %eax
+        mov %eax, 2
+        add %eax, %ebx"""
+        self.run_test(test_program, expected_assembly)
+
+    def test_subtraction_spaces(self):
+        test_program = "1 - 2"
+        # Need to remember that mov is dest, source
+        expected_assembly = b"""
+        mov %eax, 1
+        mov %ebx, %eax
+        mov %eax, -2
+        sub %eax, %ebx"""
+        self.run_test(test_program, expected_assembly)
+
 
 if __name__ == "__main__":
     unittest.main()
