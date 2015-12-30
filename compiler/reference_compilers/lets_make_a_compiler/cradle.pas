@@ -1,3 +1,6 @@
+{ This is a compiler based on http://compilers.iecc.com/crenshaw/
+ NOTE: This particular compiler uses x86_64 for code generation rather than 
+ dos 68000 }
 {--------------------------------------------------------------}
 program Cradle;
 
@@ -129,7 +132,7 @@ end;
 { Parse and Translate an Expression }
 procedure Term;
 begin
-   EmitLn('MOVE #' + GetNum + ',D0')
+   EmitLn('mov %eax, $' + GetNum)
 end;
 {---------------------------------------------------------------}
 
@@ -141,7 +144,7 @@ procedure Add;
 begin
    Match('+');
    Term;
-   EmitLn('ADD D1,D0');
+   EmitLn('add %ebx, %eax');
 end;
 
 
