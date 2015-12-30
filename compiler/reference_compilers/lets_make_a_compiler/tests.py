@@ -1,6 +1,5 @@
 import unittest
 import subprocess
-from pprint import pprint
 
 class TestInitialization(unittest.TestCase):
 
@@ -18,7 +17,7 @@ class TestInitialization(unittest.TestCase):
         raw_text = raw_text.strip()
         split_text = raw_text.split("\n")
         cleaned_text = [line.lstrip() for line in split_text]
-        return "".join(cleaned_text)
+        return "\n".join(cleaned_text)
 
     def run_test(self, test_program, expected_assembly):
         sub_process = subprocess.Popen(
@@ -30,8 +29,11 @@ class TestInitialization(unittest.TestCase):
         actual_assembly = sub_process.communicate(test_program)
         actual_assembly = self.clean_formatting(actual_assembly[0])
         expected_assembly = self.clean_formatting(expected_assembly)
-        pprint(actual_assembly)
-        pprint(expected_assembly)
+        print("------- actual assembly ----------")
+        print(actual_assembly)
+        print("------- expected assembly ----------")
+        print(expected_assembly)
+        print("------- end ----------")
         self.assertEqual(actual_assembly, expected_assembly)
 
     def test_single_literal(self):
