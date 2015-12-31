@@ -6,16 +6,16 @@ EXECUTABLES = $(OBJECTS:.o=)
 # $< is the first dependency name
 # $@ is the target filename
 %.o: %.s
-	as $< -o $@
+	@as $< -o $@
 
 default: $(OBJECTS)
-	for exe in $(EXECUTABLES) ; do \
+	@for exe in $(EXECUTABLES) ; do \
 		ld -lc -macosx_version_min 10.8.5 $$exe.o -o $$exe ; \
 	done
 
 .PHONY: clean
 clean:
-	rm *.o
-	for exe in $(EXECUTABLES) ; do \
+	@rm *.o
+	@for exe in $(EXECUTABLES) ; do \
 		rm $$exe ; \
 	done
