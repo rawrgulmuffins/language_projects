@@ -1,3 +1,8 @@
+# Vim Files
 *.sw*
+
+# Application files
 cradle
-cradle.o
+
+# Compliation temporary files
+*.o

@@ -1,6 +1,8 @@
 # Reference Material
 http://compilers.iecc.com/crenshaw/
 
+## X86_64 Referece Material
+https://nickdesaulniers.github.io/blog/2014/04/18/lets-write-some-x86-64/
 # Notes On Introduction
 ## FPC
 * OSX needs the free pascal compiler which is almost equivilent to turbo pascal.
