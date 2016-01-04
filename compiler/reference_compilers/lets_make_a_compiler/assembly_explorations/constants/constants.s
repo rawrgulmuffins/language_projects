@@ -1,7 +1,8 @@
 .text
 .globl _main
 _main:
-    mov $1, %eax
-    mov %eax, %ebx
-    mov $2, %eax
-    call _exit
+  subq $8, %rsp
+  movq $0, %rax
+  movq %rax, %rbx
+  movq $0, %rdi
+  call _exit
