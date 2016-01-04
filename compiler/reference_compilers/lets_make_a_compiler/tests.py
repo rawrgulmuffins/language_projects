@@ -5,36 +5,46 @@ class CompilerTestBase(unittest.TestCase):
     """Contains the code that actually runs tests and reports their results.
     """
 
-    run_compiler_string = "./cradle"
+    compiler_name = "cradle"
+    run_compiler_string = "./{}".format(compiler_name)
+    build_compiler_commands = ["fpc", "{}.pas".format(compiler_name)]
 
     def _build_compiler(self):
         """Runs the compliation step before running any tests. If this fails,
         abort the tests.
         """
-        pass
+        sub_process = subprocess.Popen(self.build_compiler_commands)
 
-    def classSetUp(self):
-        self.build_compiler()
+    @classmethod
+    def setUpClass(cls):
+        if cls is CompilerTestBase:
+            cls._build_compiler(cls)
 
     def _compile_program(self):
         """If the compiler succesfully compiled
+
+        TODO: FINISH ME
         """
         pass
 
     def run_program(self):
         """Given a successfully compiled compiler and a successfully compiled
         program actually run the program and return the results.
+
+        TODO: FINISH ME
         """
         pass
 
     def test_if_segfaulted(self):
+        """
+
+        TODO: FINISH ME
+        """
         pass
 
     def clean_formatting(self, raw_text):
         """Simple string cleaner that ignores all prior whitespace and left
         hand side whitespace.
-
-        TODO: Need to fix output formatting still.
         """
         raw_text = raw_text.decode("utf-8")
         # Remove all whitespace leading up to actual text.
@@ -78,7 +88,7 @@ class TestArithmetic(CompilerTestBase):
     """
     NOTE: turning off for now until we get a basic working program.
     """
-    """
+    '''
     def test_addition_no_space(self):
         test_program = "1+2"
         # Need to remember that mov is dest, source
@@ -118,7 +128,7 @@ class TestArithmetic(CompilerTestBase):
         mov %eax, -2
         sub %eax, %ebx"""
         self.run_test(test_program, expected_assembly)
-    """
+    '''
 
 
 if __name__ == "__main__":
