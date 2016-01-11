@@ -1,24 +1,57 @@
-import unittest
+import logging
+import select
 import subprocess
+import unittest
+
 
 class CompilerTestBase(unittest.TestCase):
     """Contains the code that actually runs tests and reports their results.
     """
 
     compiler_name = "cradle"
+
+    # Command that is used to run the compiler.
     run_compiler_string = "./{}".format(compiler_name)
+
+    # This is the command and arguments that will build the compiler
     build_compiler_commands = ["fpc", "{}.pas".format(compiler_name)]
 
-    def _build_compiler(self):
+    @classmethod
+    def _build_compiler(cls):
         """Runs the compliation step before running any tests. If this fails,
         abort the tests.
+
+        Subprocess handling code from
+        https://stackoverflow.com/questions/18273962/python-subprocess-call-hangs
         """
-        sub_process = subprocess.Popen(self.build_compiler_commands)
+        logger = logging.getLogger(__name__)
+        is_running = lambda: compile_process.poll() is None
+
+        compile_process = subprocess.Popen(
+            cls.build_compiler_commands,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,)
+
+        # Grab all the output from stdout and stderr and log it
+        while is_running():
+            rlist, wlist, xlist = select.select(
+                [compile_process.stdout, compile_process.stderr], [], [], 1)
+
+        # Log stdout, but don't spam the log
+        if compile_process.stdout in rlist and verbose:
+            # Adjust the number of bytes read however you like, 1024 seems to work 
+            # pretty well for me. 
+            logger.debug(compile_process.stdout.read(1024))
+
+        # Log stderr, always
+        if compile_process.stderr in rlist:
+            # Same as with stdout, adjust the bytes read as needed.
+            logger.error(compile_process.stderr.read(1024))
 
     @classmethod
     def setUpClass(cls):
         if cls is CompilerTestBase:
-            cls._build_compiler(cls)
+            cls._build_compiler()
 
     def _compile_program(self):
         """If the compiler succesfully compiled
@@ -132,4 +165,5 @@ class TestArithmetic(CompilerTestBase):
 
 
 if __name__ == "__main__":
+    logging.basicConfig()
     unittest.main()
