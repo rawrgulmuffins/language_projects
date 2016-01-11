@@ -4,5 +4,7 @@
 # Application files
 cradle
 
-# Compliation temporary files
+# Compilation temporary files
 *.o
+link.res
+ppaslink.sh
