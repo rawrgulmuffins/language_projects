@@ -124,13 +124,13 @@ end;
 
 procedure Init;
 begin
+    { Grab the next character. Not doing token lookahead yet.}
+    GetChar;
     { pre progoram boiler plate }
     EmitLn('.text');
     EmitLn('.globl _main');
     EmitLn('    _main:');
     EmitLn('    subq $8, %rsp');
-    { Grab the next character. Not doing token lookahead yet.}
-    GetChar;
 end;
 
 procedure Post;
@@ -144,7 +144,7 @@ end;
 { Parse and Translate an Expression }
 procedure Term;
 begin
-    EmitLn('mov %eax, $' + GetNum)
+    EmitLn('mov $' + GetNum + ', %eax')
 end;
 {---------------------------------------------------------------}
 
@@ -179,7 +179,7 @@ end;
 procedure Expression;
 begin
     Term;
-    EmitLn('MOVE D0,D1');
+    EmitLn('movq %rax, %rbx');
     case Look of
     '+': Add;
     '-': Subtract;
