@@ -95,7 +95,11 @@ class CompilerTestBase(unittest.TestCase):
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.STDOUT)
-        test_program = bytes(test_program, "utf-8")
+        try:
+            test_program = bytes(test_program, "utf-8")
+        except AttributeError:
+            # Already a string, do nothing.
+            pass
         actual_assembly = sub_process.communicate(test_program)
         actual_assembly = self.clean_formatting(actual_assembly[0])
         expected_assembly = self.clean_formatting(expected_assembly)
@@ -175,6 +179,16 @@ class TestArithmetic(CompilerTestBase):
             test_program,
             expected_assembly=self.addition_assembly)
 
+    def test_addition_missing_left_literal(self):
+        test_program = "+2"
+        expected_assembly = b"Error: Addop Expected"
+        self.run_test(test_program, expected_assembly)
+
+    def test_addition_missing_right_literal(self):
+        test_program = "1+"
+        expected_assembly = b"Error: Addop Expected"
+        self.run_test(test_program, expected_assembly)
+
     def test_subtraction_no_space(self):
         test_program = "1-2"
         self.run_test(
@@ -186,6 +200,16 @@ class TestArithmetic(CompilerTestBase):
         self.run_test(
             test_program,
             expected_assembly=self.subtraction_assembly)
+
+    def test_subtraction_missing_left_literal(self):
+        test_program = "-2"
+        expected_assembly = b"Error: Subop Expected"
+        self.run_test(test_program, expected_assembly)
+
+    def test_subtraction_missing_right_literal(self):
+        test_program = "1-"
+        expected_assembly = b"Error: Subop Expected"
+        self.run_test(test_program, expected_assembly)
 
 
 if __name__ == "__main__":
