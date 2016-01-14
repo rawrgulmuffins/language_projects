@@ -135,50 +135,55 @@ class TestInitialization(CompilerTestBase):
         self.run_test(test_program, expected_assembly)
 
 class TestArithmetic(CompilerTestBase):
+
+    addition_assembly = """
+    .text
+    .globl _main
+    _main:
+        subq $8, %rsp
+        movq $1, %rax
+        movq %rax, %rbx
+        movq $2, %rax
+        add %rax, %rbx
+        movq $0, %rdi
+        call _exit
     """
-    NOTE: turning off for now until we get a basic working program.
+
+    subtraction_assembly = """
+    .text
+    .globl _main
+    _main:
+        subq $8, %rsp
+        movq $2, %rax
+        movq %rax, %rbx
+        movq $1, %rax
+        sub %rax, %rbx
+        movq $0, %rdi
+        call _exit
     """
-    '''
     def test_addition_no_space(self):
         test_program = "1+2"
-        # Need to remember that mov is dest, source
-        expected_assembly = b"""
-        mov %eax, 1
-        mov %ebx, %eax
-        mov %eax, 2
-        add %eax, %ebx"""
-        self.run_test(test_program, expected_assembly)
+        self.run_test(
+            test_program,
+            expected_assembly=self.addition_assembly)
 
     def test_addition_spaces(self):
         test_program = "1+2"
-        # Need to remember that mov is dest, source
-        expected_assembly = b"""
-        mov %eax, 1
-        mov %ebx, %eax
-        mov %eax, 2
-        add %eax, %ebx"""
-        self.run_test(test_program, expected_assembly)
+        self.run_test(
+            test_program,
+            expected_assembly=self.addition_assembly)
 
     def test_subtraction_no_space(self):
         test_program = "1+2"
-        # Need to remember that mov is dest, source
-        expected_assembly = b"""
-        mov %eax, 1
-        mov %ebx, %eax
-        mov %eax, 2
-        add %eax, %ebx"""
-        self.run_test(test_program, expected_assembly)
+        self.run_test(
+            test_program,
+            expected_assembly=self.subtraction_assembly)
 
     def test_subtraction_spaces(self):
         test_program = "1 - 2"
-        # Need to remember that mov is dest, source
-        expected_assembly = b"""
-        mov %eax, 1
-        mov %ebx, %eax
-        mov %eax, -2
-        sub %eax, %ebx"""
-        self.run_test(test_program, expected_assembly)
-    '''
+        self.run_test(
+            test_program,
+            expected_assembly=self.subtraction_assembly)
 
 
 if __name__ == "__main__":
