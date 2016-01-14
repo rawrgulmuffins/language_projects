@@ -12,6 +12,7 @@ default: $(OBJECTS)
 	@for exe in $(EXECUTABLES) ; do \
 		ld -lc -macosx_version_min 10.8.5 $$exe.o -o $$exe ; \
 	done
+	@rm *.o
 
 .PHONY: clean
 clean:
