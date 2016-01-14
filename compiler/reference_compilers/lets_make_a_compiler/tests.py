@@ -99,11 +99,13 @@ class CompilerTestBase(unittest.TestCase):
         actual_assembly = sub_process.communicate(test_program)
         actual_assembly = self.clean_formatting(actual_assembly[0])
         expected_assembly = self.clean_formatting(expected_assembly)
-        print("------- actual assembly ----------")
-        print(actual_assembly)
-        print("------- expected assembly ----------")
-        print(expected_assembly)
-        print("------- end ----------")
+        if self.verbose:
+            # TODO: switch to logging statements.
+            print("------- actual assembly ----------")
+            print(actual_assembly)
+            print("------- expected assembly ----------")
+            print(expected_assembly)
+            print("------- end ----------")
         self.assertEqual(actual_assembly, expected_assembly)
 
 class TestInitialization(CompilerTestBase):
@@ -136,7 +138,7 @@ class TestInitialization(CompilerTestBase):
 
 class TestArithmetic(CompilerTestBase):
 
-    addition_assembly = """
+    addition_assembly = b"""
     .text
     .globl _main
     _main:
@@ -149,14 +151,14 @@ class TestArithmetic(CompilerTestBase):
         call _exit
     """
 
-    subtraction_assembly = """
+    subtraction_assembly = b"""
     .text
     .globl _main
     _main:
         subq $8, %rsp
-        movq $2, %rax
-        movq %rax, %rbx
         movq $1, %rax
+        movq %rax, %rbx
+        movq $2, %rax
         sub %rax, %rbx
         movq $0, %rdi
         call _exit
@@ -174,7 +176,7 @@ class TestArithmetic(CompilerTestBase):
             expected_assembly=self.addition_assembly)
 
     def test_subtraction_no_space(self):
-        test_program = "1+2"
+        test_program = "1-2"
         self.run_test(
             test_program,
             expected_assembly=self.subtraction_assembly)

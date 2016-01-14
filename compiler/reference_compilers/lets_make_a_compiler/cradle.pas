@@ -144,7 +144,7 @@ end;
 { Parse and Translate an Expression }
 procedure Term;
 begin
-    EmitLn('mov $' + GetNum + ', %eax')
+    EmitLn('    movq $' + GetNum + ', %rax')
 end;
 {---------------------------------------------------------------}
 
@@ -156,7 +156,7 @@ procedure Add;
 begin
     Match('+');
     Term;
-    EmitLn('add %ebx, %eax');
+    EmitLn('    add %rax, %rbx');
 end;
 
 
@@ -167,8 +167,9 @@ procedure Subtract;
 begin
     Match('-');
     Term;
-    EmitLn('SUB D1,D0');
-    EmitLn('NEG D0');
+    { TODO: Test if this subtractions rbx from rax or rax from rbx }
+    { NOTE: potentially need to swithc the sign depending. }
+    EmitLn('    sub %rax, %rbx');
 end;
 {-------------------------------------------------------------}
 
@@ -179,7 +180,7 @@ end;
 procedure Expression;
 begin
     Term;
-    EmitLn('movq %rax, %rbx');
+    EmitLn('    movq %rax, %rbx');
     case Look of
     '+': Add;
     '-': Subtract;
