@@ -8,6 +8,9 @@ class CompilerTestBase(unittest.TestCase):
     """Contains the code that actually runs tests and reports their results.
     """
 
+    # TODO: make this a command line argument
+    verbose = False
+
     compiler_name = "cradle"
 
     # Command that is used to run the compiler.
@@ -38,7 +41,7 @@ class CompilerTestBase(unittest.TestCase):
                 [compile_process.stdout, compile_process.stderr], [], [], 1)
 
         # Log stdout, but don't spam the log
-        if compile_process.stdout in rlist and verbose:
+        if compile_process.stdout in rlist and cls.verbose:
             # Adjust the number of bytes read however you like, 1024 seems to work 
             # pretty well for me. 
             logger.debug(compile_process.stdout.read(1024))
@@ -108,13 +111,27 @@ class TestInitialization(CompilerTestBase):
     def test_single_literal(self):
         test_program = "1"
         expected_assembly = b"""
-        mov %eax, 1
+        .text
+        .globl _main
+            _main:
+            subq $8, %rsp
+            movq $0, %rax
+            movq %rax, %rbx
+            movq $0, %rdi
+            call _exit
         """
         self.run_test(test_program, expected_assembly)
 
     def test_blank_program(self):
         test_program = ""
-        expected_assembly = b""""""
+        expected_assembly = b"""
+        .text
+        .globl _main
+        _main:
+            subq $8, %rsp
+            movq $0, %rdi
+            call _exit
+        """
         self.run_test(test_program, expected_assembly)
 
 class TestArithmetic(CompilerTestBase):
