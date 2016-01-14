@@ -19,7 +19,7 @@ var Look: char;              { Lookahead Character }
 
 procedure GetChar;
 begin
-   Read(Look); { One character at a time }
+    Read(Look); { One character at a time }
 end;
 
 {--------------------------------------------------------------}
@@ -27,8 +27,8 @@ end;
 
 procedure Error(s: string);
 begin
-   WriteLn; { assuming this means write a single new line? }
-   WriteLn(^G, 'Error: ', s, '.'); { Not sure what ^G is. }
+    WriteLn; { assuming this means write a single new line? }
+    WriteLn(^G, 'Error: ', s, '.'); { Not sure what ^G is. }
 end;
 
 
@@ -37,8 +37,8 @@ end;
 
 procedure Abort(s: string);
 begin
-   Error(s);
-   Halt; { No exit code? }
+    Error(s);
+    Halt; { No exit code? }
 end;
 
 
@@ -47,7 +47,7 @@ end;
 
 procedure Expected(s: string);
 begin
-   Abort(s + ' Expected');
+    Abort(s + ' Expected');
 end;
 
 {--------------------------------------------------------------}
@@ -55,8 +55,8 @@ end;
 
 procedure Match(x: char);
 begin
-   if Look = x then GetChar
-   else Expected('''' + x + '''');
+    if Look = x then GetChar
+    else Expected('''' + x + '''');
 end;
 
 
@@ -65,7 +65,7 @@ end;
 
 function IsAlpha(c: char): boolean;
 begin
-   IsAlpha := upcase(c) in ['A'..'Z'];
+    IsAlpha := upcase(c) in ['A'..'Z'];
 end;
                               
 
@@ -75,7 +75,7 @@ end;
 
 function IsDigit(c: char): boolean;
 begin
-   IsDigit := c in ['0'..'9'];
+    IsDigit := c in ['0'..'9'];
 end;
 
 
@@ -84,9 +84,9 @@ end;
 
 function GetName: char;
 begin
-   if not IsAlpha(Look) then Expected('Name');
-   GetName := UpCase(Look);
-   GetChar;
+    if not IsAlpha(Look) then Expected('Name');
+    GetName := UpCase(Look);
+    GetChar;
 end;
 
 
@@ -95,9 +95,9 @@ end;
 
 function GetNum: char;
 begin
-   if not IsDigit(Look) then Expected('Integer');
-   GetNum := Look;
-   GetChar;
+    if not IsDigit(Look) then Expected('Integer');
+    GetNum := Look;
+    GetChar;
 end;
 
 
@@ -106,7 +106,7 @@ end;
 
 procedure Emit(s: string);
 begin
-   Write(TAB, s);
+    Write(TAB, s);
 end;
 
 
@@ -115,8 +115,8 @@ end;
 
 procedure EmitLn(s: string);
 begin
-   Emit(s);
-   WriteLn;
+    Emit(s);
+    WriteLn;
 end;
 
 {--------------------------------------------------------------}
@@ -124,15 +124,27 @@ end;
 
 procedure Init;
 begin
-   GetChar; { For now we're just getting one character and quitting. }
+    { pre progoram boiler plate }
+    EmitLn('.text');
+    EmitLn('.globl _main');
+    EmitLn('    _main:');
+    EmitLn('    subq $8, %rsp');
+    { Grab the next character. Not doing token lookahead yet.}
+    GetChar;
 end;
 
+procedure Post;
+begin
+    { Post Program teardown. Always report program success for now. }
+    EmitLn('    movq $0, %rdi');
+    EmitLn('    call _exit');
+end;
 
 {---------------------------------------------------------------}
 { Parse and Translate an Expression }
 procedure Term;
 begin
-   EmitLn('mov %eax, $' + GetNum)
+    EmitLn('mov %eax, $' + GetNum)
 end;
 {---------------------------------------------------------------}
 
@@ -142,9 +154,9 @@ end;
 
 procedure Add;
 begin
-   Match('+');
-   Term;
-   EmitLn('add %ebx, %eax');
+    Match('+');
+    Term;
+    EmitLn('add %ebx, %eax');
 end;
 
 
@@ -153,10 +165,10 @@ end;
 
 procedure Subtract;
 begin
-   Match('-');
-   Term;
-   EmitLn('SUB D1,D0');
-   EmitLn('NEG D0');
+    Match('-');
+    Term;
+    EmitLn('SUB D1,D0');
+    EmitLn('NEG D0');
 end;
 {-------------------------------------------------------------}
 
@@ -166,13 +178,13 @@ end;
 
 procedure Expression;
 begin
-   Term;
-   EmitLn('MOVE D0,D1');
-   case Look of
+    Term;
+    EmitLn('MOVE D0,D1');
+    case Look of
     '+': Add;
     '-': Subtract;
-   else Expected('Addop');
-   end;
+    else Expected('Addop');
+    end;
 end;
 {--------------------------------------------------------------}
 
@@ -180,7 +192,8 @@ end;
 { Main Program }
 
 begin
-   Init;
-   Expression;
+    Init;
+    Expression;
+    Post;
 end.
 {--------------------------------------------------------------}
