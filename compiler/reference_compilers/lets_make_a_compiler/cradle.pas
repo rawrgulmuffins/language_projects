@@ -156,6 +156,7 @@ procedure Add;
 begin
     Match('+');
     Term;
+    EmitLn('    pop %rbx');
     EmitLn('    add %rax, %rbx');
 end;
 
@@ -169,6 +170,7 @@ begin
     Term;
     { TODO: Test if this subtractions rbx from rax or rax from rbx }
     { NOTE: potentially need to swithc the sign depending. }
+    EmitLn('    pop %rbx');
     EmitLn('    sub %rax, %rbx');
 end;
 {-------------------------------------------------------------}
@@ -181,7 +183,7 @@ procedure Expression;
 begin
     Term;
     while Look in ['+', '-'] do begin
-        EmitLn('    movq %rax, %rbx');
+        EmitLn('    push %rax');
         case Look of
         '+': Add;
         '-': Subtract;

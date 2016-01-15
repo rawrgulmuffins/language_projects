@@ -121,8 +121,7 @@ class TestInitialization(CompilerTestBase):
         .globl _main
             _main:
             subq $8, %rsp
-            movq $0, %rax
-            movq %rax, %rbx
+            movq $1, %rax
             movq $0, %rdi
             call _exit
         """
@@ -148,8 +147,9 @@ class TestArithmetic(CompilerTestBase):
     _main:
         subq $8, %rsp
         movq $1, %rax
-        movq %rax, %rbx
+        push %rax
         movq $2, %rax
+        pop %rbx
         add %rax, %rbx
         movq $0, %rdi
         call _exit
@@ -161,8 +161,9 @@ class TestArithmetic(CompilerTestBase):
     _main:
         subq $8, %rsp
         movq $1, %rax
-        movq %rax, %rbx
+        push %rax
         movq $2, %rax
+        pop %rbx
         sub %rax, %rbx
         movq $0, %rdi
         call _exit
