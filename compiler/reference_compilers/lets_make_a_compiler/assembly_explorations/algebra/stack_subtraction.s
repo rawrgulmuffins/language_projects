@@ -3,8 +3,9 @@
 _main:
     subq $8, %rsp
     movq $2, %rax
-    movq %rax, %rbx
+    push %rax
     movq $1, %rax
+    pop %rbx
     sub %rax, %rbx
     movq $0, %rdi
     call _exit
