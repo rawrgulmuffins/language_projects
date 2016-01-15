@@ -180,11 +180,13 @@ end;
 procedure Expression;
 begin
     Term;
-    EmitLn('    movq %rax, %rbx');
-    case Look of
-    '+': Add;
-    '-': Subtract;
-    else Expected('Addop');
+    while Look in ['+', '-'] do begin
+        EmitLn('    movq %rax, %rbx');
+        case Look of
+        '+': Add;
+        '-': Subtract;
+        else Expected('Addop');
+        end;
     end;
 end;
 {--------------------------------------------------------------}
