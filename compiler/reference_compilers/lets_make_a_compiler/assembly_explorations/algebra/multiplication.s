@@ -6,6 +6,6 @@ _main:
     push %rax
     movq $2, %rax
     pop %rbx
-    add %rax, %rbx
+    mul %rbx
     movq $0, %rdi
     call _exit
