@@ -4,6 +4,7 @@ EXECUTABLES = cradle
 
 default: $(SOURCES)
 	$(FPC) $(SOURCES)
+	@rm *.o
 
 .PHONY: clean
 clean:
