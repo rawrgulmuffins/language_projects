@@ -141,6 +141,36 @@ class TestInitialization(CompilerTestBase):
 
 class TestArithmetic(CompilerTestBase):
 
+    division_assembly = b"""
+    .text
+    .globl _main
+    _main:
+        subq $8, %rsp
+        movq $2, %rax
+        push %rax
+        movq $1, %rax
+        movq %rax, %rbx
+        pop %rax
+        xor  %rdx, %rdx
+        div %rbx
+        movq $0, %rdi
+        call _exit
+    """
+
+    multiplication_assembly = b"""
+    .text
+    .globl _main
+    _main:
+        subq $8, %rsp
+        movq $1, %rax
+        push %rax
+        movq $2, %rax
+        pop %rbx
+        mul %rbx
+        movq $0, %rdi
+        call _exit
+    """
+
     addition_assembly = b"""
     .text
     .globl _main
@@ -174,17 +204,20 @@ class TestArithmetic(CompilerTestBase):
             test_program,
             expected_assembly=self.addition_assembly)
 
+    @unittest.skip("Spaces not included yet.")
     def test_addition_spaces(self):
-        test_program = "1+2"
+        test_program = "1 + 2"
         self.run_test(
             test_program,
             expected_assembly=self.addition_assembly)
 
+    @unittest.skip("Errors not included yet.")
     def test_addition_missing_left_literal(self):
         test_program = "+2"
         expected_assembly = b"Error: Addop Expected"
         self.run_test(test_program, expected_assembly)
 
+    @unittest.skip("Errors not included yet.")
     def test_addition_missing_right_literal(self):
         test_program = "1+"
         expected_assembly = b"Error: Addop Expected"
@@ -196,21 +229,57 @@ class TestArithmetic(CompilerTestBase):
             test_program,
             expected_assembly=self.subtraction_assembly)
 
+    @unittest.skip("Spaces not included yet.")
     def test_subtraction_spaces(self):
         test_program = "1 - 2"
         self.run_test(
             test_program,
             expected_assembly=self.subtraction_assembly)
 
-    def test_subtraction_missing_left_literal(self):
-        test_program = "-2"
-        expected_assembly = b"Error: Subop Expected"
-        self.run_test(test_program, expected_assembly)
-
+    @unittest.skip("Errors not included yet.")
     def test_subtraction_missing_right_literal(self):
         test_program = "1-"
         expected_assembly = b"Error: Subop Expected"
         self.run_test(test_program, expected_assembly)
+
+    def test_multiplciation_no_spaces(self):
+        test_program = "1*2"
+        self.run_test(
+            test_program,
+            expected_assembly=self.multiplication_assembly)
+
+    @unittest.skip("Spaces not included yet.")
+    def test_multiplciation_spaces(self):
+        test_program = "1 * 2"
+        self.run_test(
+            test_program,
+            expected_assembly=self.multiplication_assembly)
+
+    @unittest.skip("Errors not included yet.")
+    def test_invalid_mul_operation(self):
+        test_program = "1*"
+        expected_assembly = b"Error: Mulop Expected"
+        self.run_test(test_program, expected_assembly)
+
+    @unittest.skip("Spaces not included yet.")
+    def test_division_spaces(self):
+        test_program = "2 / 1"
+        self.run_test(
+            test_program,
+            expected_assembly=self.multiplication_assembly)
+
+    def test_division_no_spaces(self):
+        test_program = "1/2"
+        self.run_test(
+            test_program,
+            expected_assembly=self.multiplication_assembly)
+
+    @unittest.skip("Errors not included yet.")
+    def test_invalid_div_operation(self):
+        test_program = "1/"
+        expected_assembly = b"Error: Divop Expected"
+        self.run_test(test_program, expected_assembly)
+
 
 
 if __name__ == "__main__":
