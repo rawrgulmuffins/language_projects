@@ -148,10 +148,10 @@ class TestArithmetic(CompilerTestBase):
         subq $8, %rsp
         movq $2, %rax
         push %rax
-        movq $1, %rax
+        movq $2, %rax
         movq %rax, %rbx
         pop %rax
-        xor  %rdx, %rdx
+        xor %rdx, %rdx
         div %rbx
         movq $0, %rdi
         call _exit
@@ -263,16 +263,16 @@ class TestArithmetic(CompilerTestBase):
 
     @unittest.skip("Spaces not included yet.")
     def test_division_spaces(self):
-        test_program = "2 / 1"
+        test_program = "2 / 2"
         self.run_test(
             test_program,
-            expected_assembly=self.multiplication_assembly)
+            expected_assembly=self.division_assembly)
 
     def test_division_no_spaces(self):
-        test_program = "1/2"
+        test_program = "2/2"
         self.run_test(
             test_program,
-            expected_assembly=self.multiplication_assembly)
+            expected_assembly=self.division_assembly)
 
     @unittest.skip("Errors not included yet.")
     def test_invalid_div_operation(self):
