@@ -281,6 +281,55 @@ class TestArithmetic(CompilerTestBase):
         self.run_test(test_program, expected_assembly)
 
 
+class TestParenthese(CompilerTestBase):
+
+
+    pre_boiler_plate = b"""
+    """
+    post_boiler_plate = b"""
+    """
+    addition_assembly = b"""
+    """
+
+    def constant_assembly(integer):
+        return b""
+
+    def test_parens_no_expression(self):
+        test_program = "()"
+        expected_assembly = b"""
+        .text
+        .globl _main
+        _main:
+            subq $8, %rsp
+            movq $0, %rdi
+            call _exit
+        """
+        self.run_test(test_program, expected_assembly)
+
+    def test_parens_signle_digit(self):
+        test_program = "(1)"
+        expected_assembly = b"""
+        """
+        self.run_test(test_program, expected_assembly)
+
+    def test_parens_sigle_expression(self):
+        test_program = "(1+2)"
+        expected_assembly = b"""
+        """
+        self.run_test(test_program, expected_assembly)
+
+    def test_parens_nested_expression(self):
+        test_program = "(1(2+(3)))"
+        expected_assembly = b"""
+        """
+        self.run_test(test_program, expected_assembly)
+
+    def test_parens_broad_expressions(self):
+        test_program = "(1+(2+3))+4"
+        expected_assembly = b"""
+        """
+        self.run_test(test_program, expected_assembly)
+
 
 if __name__ == "__main__":
     logging.basicConfig()
