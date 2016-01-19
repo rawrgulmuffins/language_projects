@@ -1,3 +1,8 @@
+"""
+
+NOTE: for now this is just intended to be run as python -m tests from the
+compiler directory (parent directory of this file).
+"""
 import logging
 import select
 import subprocess
@@ -11,10 +16,13 @@ class CompilerTestBase(unittest.TestCase):
     # TODO: make this a command line argument
     verbose = False
 
+    dir_location = "../"
     compiler_name = "cradle"
 
     # Command that is used to run the compiler.
-    run_compiler_string = "./{}".format(compiler_name)
+    run_compiler_string = "{dir_location}{compiler_name}".format(
+            dir_location=dir_location,
+            compiler_name=compiler_name,)
 
     # This is the command and arguments that will build the compiler
     build_compiler_commands = ["fpc", "{}.pas".format(compiler_name)]
