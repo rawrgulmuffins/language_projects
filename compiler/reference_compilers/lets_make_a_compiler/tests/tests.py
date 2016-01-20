@@ -4,6 +4,7 @@ NOTE: for now this is just intended to be run as python -m tests from the
 compiler directory (parent directory of this file).
 """
 import logging
+import os
 import select
 import subprocess
 import unittest
@@ -14,18 +15,51 @@ class CompilerTestBase(unittest.TestCase):
     """
 
     # TODO: make this a command line argument
-    verbose = False
 
-    dir_location = "../"
-    compiler_name = "cradle"
+    @classmethod
+    def setUpClass(cls):
 
-    # Command that is used to run the compiler.
-    run_compiler_string = "{dir_location}{compiler_name}".format(
-            dir_location=dir_location,
-            compiler_name=compiler_name,)
+        # Static Configuration
+        # TODO: Move static configuration to a config file.
+        verbose = False
+        self.compiler_name = "cradle"
+        self.paths_to_test = ["./", "../"]
 
-    # This is the command and arguments that will build the compiler
-    build_compiler_commands = ["fpc", "{}.pas".format(compiler_name)]
+        self.compiler_path = cls.get_compiler_path(compiler_name)
+
+        # Command that is used to run the compiler.
+        self.run_compiler_string = "{}".format(
+            compiler_path,)
+
+        # This is the command and arguments that will build the compiler
+        self.file_extension = "pas"
+        build_compiler_commands = ["fpc", "{}.{}".format(
+            compiler_path,
+            self.file_extension)]
+
+        if cls is CompilerTestBase:
+            cls._build_compiler()
+
+    @staticmethod
+    def potential_paths(potential_paths):
+        for path in potential_paths:
+            yield "{}{}".format(path, self.compiler_name)
+
+    @classmethod
+    def get_compiler_path(cls, compiler_name):
+        """
+
+        # TODO: change into a class attribute function.
+        """
+        # Currently only supporting calling from test directory and project
+        # directory.
+        for compiler_path in cls.potential_paths(paths_to_test):
+            if os.path.isfile(compiler_path):
+                return compiler_path
+
+        raise RuntimeError("No compiler could be found to test. Either the"
+            "compiler paths are incorrectly configured or the compiler name"
+            "is incorrectly configured.")
 
     @classmethod
     def _build_compiler(cls):
@@ -34,6 +68,9 @@ class CompilerTestBase(unittest.TestCase):
 
         Subprocess handling code from
         https://stackoverflow.com/questions/18273962/python-subprocess-call-hangs
+
+        # TODO: COMPILE USING THE PROJECT MAKEFILE!!!
+        # No, really, that needs to be the next workflow improvement.
         """
         logger = logging.getLogger(__name__)
         is_running = lambda: compile_process.poll() is None
@@ -58,33 +95,6 @@ class CompilerTestBase(unittest.TestCase):
         if compile_process.stderr in rlist:
             # Same as with stdout, adjust the bytes read as needed.
             logger.error(compile_process.stderr.read(1024))
-
-    @classmethod
-    def setUpClass(cls):
-        if cls is CompilerTestBase:
-            cls._build_compiler()
-
-    def _compile_program(self):
-        """If the compiler succesfully compiled
-
-        TODO: FINISH ME
-        """
-        pass
-
-    def run_program(self):
-        """Given a successfully compiled compiler and a successfully compiled
-        program actually run the program and return the results.
-
-        TODO: FINISH ME
-        """
-        pass
-
-    def test_if_segfaulted(self):
-        """
-
-        TODO: FINISH ME
-        """
-        pass
 
     def clean_formatting(self, raw_text):
         """Simple string cleaner that ignores all prior whitespace and left
