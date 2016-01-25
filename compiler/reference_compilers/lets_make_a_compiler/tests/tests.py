@@ -302,25 +302,38 @@ class TestParenthese(CompilerTestBase):
 
 
     pre_boiler_plate = b"""
-    """
-    post_boiler_plate = b"""
-    """
-    addition_assembly = b"""
+    .text
+    .globl _main
+        _main:
+        subq $8, %rsp
+        add %rax, %rbx
     """
 
-    def constant_assembly(integer):
-        return b""
+    post_boiler_plate = b"""
+        movq $0, %rdi
+        call _exit
+    """
+
+    def constant_assembly(self, integer):
+        constant_assembly = self.pre_boiler_plate
+        constant_assembly += b"""
+            movq $1, %rax
+        """
+        constant_assembly += self.post_boiler_plate
+        return constnat_assembly
+ 
+    def addition_assembly(self, left_int, right_int):
+        addtion_assembly = self.pre_boiler_plate
+        addition_string = b"""
+        movq ${}, %rax
+        push %rax
+        movq ${}, %rax""".format(left_int, right_int)
+        addtion_assembly = self.post_boiler_plate
+        return addition_string
 
     def test_parens_no_expression(self):
         test_program = "()"
-        expected_assembly = b"""
-        .text
-        .globl _main
-        _main:
-            subq $8, %rsp
-            movq $0, %rdi
-            call _exit
-        """
+        expected_assembly = self.pre_boiler_plate + self.post_boiler_plate
         self.run_test(test_program, expected_assembly)
 
     def test_parens_signle_digit(self):
