@@ -21,29 +21,28 @@ class CompilerTestBase(unittest.TestCase):
 
         # Static Configuration
         # TODO: Move static configuration to a config file.
-        verbose = False
-        self.compiler_name = "cradle"
-        self.paths_to_test = ["./", "../"]
+        cls.verbose = False
+        cls.compiler_name = "cradle"
+        cls.paths_to_test = ["./", "../"]
+        # End static configuration
 
-        self.compiler_path = cls.get_compiler_path(compiler_name)
+        cls.compiler_path = cls.get_compiler_path(cls.compiler_name)
 
         # Command that is used to run the compiler.
-        self.run_compiler_string = "{}".format(
-            compiler_path,)
+        cls.run_compiler_string = "{}".format(cls.compiler_path)
 
         # This is the command and arguments that will build the compiler
-        self.file_extension = "pas"
+        cls.file_extension = "pas"
         build_compiler_commands = ["fpc", "{}.{}".format(
-            compiler_path,
-            self.file_extension)]
+            cls.compiler_path,
+            cls.file_extension)]
 
         if cls is CompilerTestBase:
             cls._build_compiler()
 
-    @staticmethod
-    def potential_paths(potential_paths):
+    def potential_paths(cls, potential_paths):
         for path in potential_paths:
-            yield "{}{}".format(path, self.compiler_name)
+            yield "{}{}".format(path, cls.compiler_name)
 
     @classmethod
     def get_compiler_path(cls, compiler_name):
@@ -53,7 +52,7 @@ class CompilerTestBase(unittest.TestCase):
         """
         # Currently only supporting calling from test directory and project
         # directory.
-        for compiler_path in cls.potential_paths(paths_to_test):
+        for compiler_path in cls.potential_paths(cls, cls.paths_to_test):
             if os.path.isfile(compiler_path):
                 return compiler_path
 
