@@ -15,6 +15,7 @@ class CompilerTestBase(unittest.TestCase):
     """
 
     # TODO: make this a command line argument
+    maxDiff = None
 
     @classmethod
     def setUpClass(cls):
@@ -311,28 +312,34 @@ class TestParenthese(CompilerTestBase):
         movq $0, %rdi
         call _exit""".lstrip()
 
+    def add_boiler_plate(self, assembly):
+        boilered_assembly = self.pre_boiler_plate
+        boilered_assembly += assembly
+        boilered_assembly += self.post_boiler_plate
+        return boilered_assembly
+
     def constant_assembly(self, integer):
-        constant_assembly = self.pre_boiler_plate
-        constant_assembly += b"""
-            movq $1, %rax
+        constant_assembly = b"""\n    movq $1, %rax
         """
-        constant_assembly += self.post_boiler_plate
+        constant_assembly = self.add_boiler_plate(constant_assembly)
         return constant_assembly
  
     def addition_assembly(self, left_int, right_int):
-        addtion_assembly = self.pre_boiler_plate
         addition_string = """
         movq ${}, %rax
         push %rax
         movq ${}, %rax
         pop %rbx
-        add %rax, %rbx""".format(left_int, right_int)
-        addtion_assembly = self.post_boiler_plate
-        return bytes(addition_string, "utf-8")
+        add %rax, %rbx
+        """.format(left_int, right_int)
+        addition_assembly = bytes(addition_string, "utf-8")
+        return addition_assembly
 
     def test_parens_no_expression(self):
         test_program = "()"
-        expected_assembly = self.pre_boiler_plate + self.post_boiler_plate
+        expected_assembly = self.pre_boiler_plate
+        expected_assembly += b"\n"
+        expected_assembly += self.post_boiler_plate
         self.run_test(test_program, expected_assembly)
 
     def test_parens_signle_digit(self):
@@ -343,12 +350,15 @@ class TestParenthese(CompilerTestBase):
     def test_parens_sigle_expression(self):
         test_program = "(1+2)"
         expected_assembly = self.addition_assembly(1, 2)
+        expected_assembly = self.add_boiler_plate(expected_assembly)
         self.run_test(test_program, expected_assembly)
 
     def test_parens_nested_expression(self):
         test_program = "(1(2+(3)))"
         expected_assembly = self.addition_assembly(2, 3)
         expected_assembly += self.addition_assembly(1, 5)
+
+        expected_assembly = self.add_boiler_plate(expected_assembly)
         self.run_test(test_program, expected_assembly)
 
     def test_parens_broad_expressions(self):
@@ -356,6 +366,8 @@ class TestParenthese(CompilerTestBase):
         expected_assembly = self.addition_assembly(2, 3)
         expected_assembly += self.addition_assembly(1, 5)
         expected_assembly += self.addition_assembly(6, 5)
+
+        expected_assembly = self.add_boiler_plate(expected_assembly)
         self.run_test(test_program, expected_assembly)
 
 
