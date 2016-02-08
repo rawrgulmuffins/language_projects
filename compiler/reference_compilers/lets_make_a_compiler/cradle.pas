@@ -1,6 +1,6 @@
 { This is a compiler based on http://compilers.iecc.com/crenshaw/
- NOTE: This particular compiler uses x86_64 for code generation rather than 
- dos 68000 }
+ NOTE: This particular compiler uses x86_64 for code generation rather than
+ the dos 68000 presented in the referenced tutorial.}
 {--------------------------------------------------------------}
 program Cradle;
 
@@ -124,9 +124,17 @@ end;
 
 {---------------------------------------------------------------}
 { Parse and Translate a Math Factor }
+procedure Expression; Forward;
+
 procedure Factor;
 begin
-    EmitLn('    movq $' + GetNum + ', %rax')
+    if Look = '(' then begin
+        Match('(');
+        Expression;
+        Match(')');
+        end
+    else
+        EmitLn('    movq $' + GetNum + ', %rax');
 end;
 
 {--------------------------------------------------------------}

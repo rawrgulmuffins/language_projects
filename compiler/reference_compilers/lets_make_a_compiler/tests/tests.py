@@ -305,14 +305,11 @@ class TestParenthese(CompilerTestBase):
     .text
     .globl _main
         _main:
-        subq $8, %rsp
-        add %rax, %rbx
-    """
+        subq $8, %rsp""".lstrip()
 
     post_boiler_plate = b"""
         movq $0, %rdi
-        call _exit
-    """
+        call _exit""".lstrip()
 
     def constant_assembly(self, integer):
         constant_assembly = self.pre_boiler_plate
@@ -320,16 +317,18 @@ class TestParenthese(CompilerTestBase):
             movq $1, %rax
         """
         constant_assembly += self.post_boiler_plate
-        return constnat_assembly
+        return constant_assembly
  
     def addition_assembly(self, left_int, right_int):
         addtion_assembly = self.pre_boiler_plate
-        addition_string = b"""
+        addition_string = """
         movq ${}, %rax
         push %rax
-        movq ${}, %rax""".format(left_int, right_int)
+        movq ${}, %rax
+        pop %rbx
+        add %rax, %rbx""".format(left_int, right_int)
         addtion_assembly = self.post_boiler_plate
-        return addition_string
+        return bytes(addition_string, "utf-8")
 
     def test_parens_no_expression(self):
         test_program = "()"
@@ -338,26 +337,25 @@ class TestParenthese(CompilerTestBase):
 
     def test_parens_signle_digit(self):
         test_program = "(1)"
-        expected_assembly = b"""
-        """
+        expected_assembly = self.constant_assembly(1)
         self.run_test(test_program, expected_assembly)
 
     def test_parens_sigle_expression(self):
         test_program = "(1+2)"
-        expected_assembly = b"""
-        """
+        expected_assembly = self.addition_assembly(1, 2)
         self.run_test(test_program, expected_assembly)
 
     def test_parens_nested_expression(self):
         test_program = "(1(2+(3)))"
-        expected_assembly = b"""
-        """
+        expected_assembly = self.addition_assembly(2, 3)
+        expected_assembly += self.addition_assembly(1, 5)
         self.run_test(test_program, expected_assembly)
 
     def test_parens_broad_expressions(self):
         test_program = "(1+(2+3))+4"
-        expected_assembly = b"""
-        """
+        expected_assembly = self.addition_assembly(2, 3)
+        expected_assembly += self.addition_assembly(1, 5)
+        expected_assembly += self.addition_assembly(6, 5)
         self.run_test(test_program, expected_assembly)
 
 
