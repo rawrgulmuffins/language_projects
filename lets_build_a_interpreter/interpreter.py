@@ -21,12 +21,18 @@ class Token:
     def __str__(self):
         """Produces a human readable representation of this objects meta data
         and data.
+
+        For now this is simple enough that we're just returning the machine
+        readable format. Subject to change as complexity increases.
         """
-        pass
+        return self.__repr__()
 
     def __repr__(self):
         """Produces a string that, if passed to a python interpreter with the
         Token type defined, will create a new Token object with the current
         variables.
         """
-        pass
+        return "Token(type={type}, value={value})".format(
+                type=self.type,
+                value=self.value,
+            )
