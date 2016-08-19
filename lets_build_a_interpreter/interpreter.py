@@ -11,6 +11,13 @@ class Token:
     def __init__(self, type, value):
         """Simple creation method used to build Tokens.
 
+        args:
+            type: A name used to associate what kind and parameters of data
+                that will be present in the Token object.
+            value: A value that's hopefully valid for the passed in data type.
+                example is that INTEGER type is associated with 
+                -1, 0, 1, 2, ...
+
         NOTE: no verification of data is currently being done. Later versions
         of this class should check for invalid values based on passed in type
         and invalide types.
@@ -36,3 +43,30 @@ class Token:
                 type=self.type,
                 value=self.value,
             )
+
+class Interpreter:
+
+    def __init__(self, text):
+        """
+        """
+        pass
+
+    def error(self):
+        """
+        """
+        pass
+
+    def next_token(self):
+        """
+        """
+        pass
+
+    def eat_token(self, token_type):
+        """
+        """
+        pass
+
+    def expr(self):
+        """
+        """
+        pass
