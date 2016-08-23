@@ -6,6 +6,14 @@ This code base was build and tested in Python3.5.
 """
 INTEGER, EOF, PLUS = 'INTEGER', 'PLUS', 'EOF'
 
+class InterpreterError(Exception):
+    """Default exception for the interpter. Only thrown as a last resort. 
+    Normally this means a more strict exception wasn't found. If you see this
+    kind of exception in the wild consider putting in an enchancement request
+    for a more narrow exception type for the given erroneous input.
+    """
+    pass
+
 class Token:
 
     def __init__(self, type, value):
@@ -49,24 +57,32 @@ class Interpreter:
     def __init__(self, text):
         """
         """
+        # Text to be interpreted
+        # NOTE: no verification at this point in time.
+        self.text = text
+        # position of the index on self.text
+        self.pos = 0
+        # current token
+        self.current_token = None
+
+    def _error(self):
+        """
+        """
+        # NOTE: force students to test these kinds of functions so they catch
+        # things like mis-namings.
+        raise InterpreterError()
+
+    def _next_token(self):
+        """
+        """
         pass
 
-    def error(self):
+    def _eat_token(self, token_type):
         """
         """
         pass
 
-    def next_token(self):
-        """
-        """
-        pass
-
-    def eat_token(self, token_type):
-        """
-        """
-        pass
-
-    def expr(self):
+    def _expr(self):
         """
         """
         pass
