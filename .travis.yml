@@ -4,4 +4,4 @@ python:
     - "3.5"
 
 script:
-    - cd lets_build_a_interpreter && pip install . && pip install -r tests_require.txt
+    - cd lets_build_a_interpreter && pip install . && pip install -r tests_require
