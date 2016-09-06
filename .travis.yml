@@ -3,18 +3,8 @@ python:
     - "3.4"
     - "3.5"
 
-install:
-    - pip install .
-    - pip install -r tests_require.txt
+env:
+    - TEST_DIR=lets_build_a_interpreter
 
 script:
-    - py.test
-
-
-notifications:
-    email:
-        recipients:
-            - alexlordthorsen@gmail.com
-
-        on_failure: always
-        on_success: always
+    - cd $TEST_DIR && pip install . && pip install -r tests_require && python -m pytest tests/*
