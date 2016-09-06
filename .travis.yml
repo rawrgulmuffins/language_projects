@@ -3,5 +3,8 @@ python:
     - "3.4"
     - "3.5"
 
+env:
+    - TEST_DIR=lets_build_a_interpreter
+
 script:
-    - cd lets_build_a_interpreter && pip install . && pip install -r tests_require
+    - cd $TEST_DIR && pip install . && pip install -r tests_require && python -m pytest tests/*
