@@ -23,5 +23,5 @@ setup(
     keywords='',
     packages=find_packages(include=['pascal_interpreter']),
     py_modules=[],
-    install_requires=install_requires,
+    install_requires=[],
 )
