@@ -3,18 +3,5 @@ python:
     - "3.4"
     - "3.5"
 
-install:
-    - pip install .
-    - pip install -r tests_require.txt
-
 script:
-    - py.test
-
-
-notifications:
-    email:
-        recipients:
-            - alexlordthorsen@gmail.com
-
-        on_failure: always
-        on_success: always
+    - cd lets_build_a_interpreter && pip install . && pip install -r tests_require.txt
