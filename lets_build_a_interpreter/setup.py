@@ -3,8 +3,6 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open("build_requires.txt") as file:
-    install_requires = [dep.strip() for dep in file.readlines()]
 
 setup(
     name='pascal_interpreter',
