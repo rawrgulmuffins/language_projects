@@ -3,14 +3,8 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-try:
-    with open("build_requires.txt") as file:
-        install_requires = [dep.strip() for dep in file.readlines()]
-except FileNotFoundError:
-    # If we're installing from the top directory in language projects..
-    with open("lets_build_a_interpreter/build_requires.txt") as file:
-        install_requires = [dep.strip() for dep in file.readlines()]
-
+with open("build_requires.txt") as file:
+    install_requires = [dep.strip() for dep in file.readlines()]
 
 setup(
     name='pascal_interpreter',
