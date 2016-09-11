@@ -4,7 +4,9 @@ found at https://ruslanspivak.com/lsbasi-part1/
 
 This code base was build and tested in Python3.5.
 """
-INTEGER, EOF, PLUS = 'INTEGER', 'PLUS', 'EOF'
+# NOTE: So when I made this I made the mistake of switching the token strings.
+# My "test_eof_at_end_of_line" test found the error.
+INTEGER, EOF, PLUS = 'INTEGER', 'EOF', 'PLUS'
 
 class InterpreterError(Exception):
     """Default exception for the interpter. Only thrown as a last resort. 
@@ -61,20 +63,45 @@ class Interpreter:
         # NOTE: no verification at this point in time.
         self.text = text
         # position of the index on self.text
-        self.pos = 0
+        self.position = 0
         # current token
         self.current_token = None
 
-    def _error(self):
+    def _error(self) -> None:
         """
         """
         # NOTE: force students to test these kinds of functions so they catch
         # things like mis-namings.
         raise InterpreterError()
 
-    def _next_token(self):
+    def _next_token(self) -> Token:
+        """This is the method that calls the token class and breaks the input
+        text into a set of tokens. This set of operations is called lexical
+        analyization.
         """
-        """
+        text = self.text
+        position = self.position
+
+        # Check to make sure we haven't run out of characters. If we have,
+        # return an EOF token.
+        if position > len(text) - 1:
+            # NOTE: forgot the return statement and test caughtn it.
+            return Token(EOF, None)
+
+        # Get the character that's at the current position.
+        current_character = text[position]
+
+        if current_character.isdigit():
+            self.position += 1
+            return Token(INTEGER, int(current_character))
+
+        if current_character == "+":
+            self.position += 1
+            return Token(PLUS, current_character)
+
+        # if this method is called then an error will be raised.
+        self._error()
+
         pass
 
     def _consume_token(self, token_type):
