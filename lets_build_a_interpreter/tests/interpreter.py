@@ -36,3 +36,22 @@ def test_eof_token_after_int():
     assert token.type == p_interp.INTEGER
     assert token.value == 1
     assert interpreter._next_token().type == p_interp.EOF
+
+
+def test_consume_valid_token():
+    input_text = "1+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    # Mistake: Since _next_token changes the state of position you can't just
+    # interpreter.current_token = p_interp.Token(p_interp.INTEGER, 1)
+    # You have to call _next_token.
+    interpreter.current_token = interpreter._next_token()
+    interpreter._consume_token(p_interp.INTEGER)
+    assert interpreter.current_token.type == p_interp.PLUS
+
+
+def test_consume_invalid_token():
+    input_text = "+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    interpreter.current_token = interpreter._next_token()
+    with pytest.raises(p_interp.InterpreterError):
+        interpreter._consume_token(p_interp.INTEGER)

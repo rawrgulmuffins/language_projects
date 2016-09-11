@@ -102,12 +102,19 @@ class Interpreter:
         # if this method is called then an error will be raised.
         self._error()
 
-        pass
-
     def _consume_token(self, token_type):
+        """consume_token checks the current tokens type with the token type
+        that's passed in. If they don't match then an error is raised.
+
+        args:
+            token_type: You can think of the token_type as the token that is
+                next expected and should be found.
         """
-        """
-        pass
+        if self.current_token.type == token_type:
+            self.current_token = self._next_token()
+        else:
+            # Mistake: Accidently named this function self.error()
+            self._error()
 
     def _parse(self):
         """
