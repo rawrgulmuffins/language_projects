@@ -55,3 +55,23 @@ def test_consume_invalid_token():
     interpreter.current_token = interpreter._next_token()
     with pytest.raises(p_interp.InterpreterError):
         interpreter._consume_token(p_interp.INTEGER)
+
+def test_parse_addition():
+    # NOTE: I misnamed this test function. Another function had the same name
+    # For a little while and as such this test was never ran.
+    input_text = "1+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    assert interpreter.parse() == 2
+
+def test_parse_sets_eof():
+    input_text = "1+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    interpreter.parse()
+    assert interpreter.current_token.type == p_interp.EOF
+
+
+def test_parse_invalid_addition():
+    input_text = "+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    with pytest.raises(p_interp.InterpreterError):
+        interpreter.parse()

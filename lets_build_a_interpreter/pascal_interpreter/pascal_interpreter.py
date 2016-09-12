@@ -116,7 +116,47 @@ class Interpreter:
             # Mistake: Accidently named this function self.error()
             self._error()
 
-    def _parse(self):
+    def parse(self):
+        """parse consumes all of the tokens found in self.text looking for a
+        set of expected tokens. Currently supported token sets are
+
+        INTEGER PLUS INTEGER
         """
-        """
-        pass
+        # Just take whatever the first token is.
+        self.current_token = self._next_token()
+
+        # We expect that the first token was an integer.
+        left = self.current_token
+        self._consume_token(INTEGER)
+
+        # The next expected Token is a PLUS
+        OP = self.current_token
+        self._consume_token(PLUS)
+
+        # Lastly we expect another integer for addition to work.
+        right = self.current_token
+        self._consume_token(INTEGER)
+
+        # Lastly we expect to run out of input.
+        self._consume_token(EOF)
+
+        # Since we now have INTEGER PLUS INTEGER we can add both integer
+        # values together.
+        result = left.value + right.value
+        return result
+
+
+def main():
+    while True:
+        try:
+            text = input("calc>")
+        except EOFError:
+            break
+        if not text:
+            continue
+        interpreter = Interpreter(text)
+        result = interpreter.parse()
+        print(result)
+
+if __name__ == "__main__":
+    main()
