@@ -6,7 +6,7 @@ This code base was build and tested in Python3.5.
 """
 # NOTE: So when I made this I made the mistake of switching the token strings.
 # My "test_eof_at_end_of_line" test found the error.
-INTEGER, EOF, PLUS = 'INTEGER', 'EOF', 'PLUS'
+INTEGER, EOF, PLUS, MINUS = "INTEGER", "EOF", "PLUS", "MINUS"
 
 class InterpreterError(Exception):
     """Default exception for the interpter. Only thrown as a last resort. 
@@ -72,7 +72,10 @@ class Interpreter:
         """
         # NOTE: force students to test these kinds of functions so they catch
         # things like mis-namings.
-        raise InterpreterError()
+        raise InterpreterError(
+            "input_text == {}, current_position == {}".format(
+                self.text,
+                self.position))
 
     def _tokenize_integer(self, text: str) -> Token:
         """If have found a single digit then this helper function will read
@@ -84,26 +87,43 @@ class Interpreter:
 
         # First we check to see if there are other digits in the int.
         first_position = self.position
-        current_character = text[self.position]
+        current_position = self.position
+        current_character = text[current_position]
 
         while True:
-
             if not current_character.isdigit():
-                # We want to ensure that we only increment the text position if
-                # we find a digit. Otherwise we might eat a not integer token.
                 break
 
+            current_position += 1
             try:
-                # Check to see if there's a following character
-                current_character = text[self.position]
-                self.position += 1
+                current_character = text[current_position]
             except IndexError:
-                # One of two potential exit conditions. This one is if we hit
-                # the end of text.
+                # If we've hit EOF we'll hit this exception.
                 break
 
-        value = int(text[first_position: self.position])
+        # Current position should be EOF or a digit.
+        self.position = current_position
+        value = int(text[first_position: current_position])
         return Token(INTEGER, value)
+
+    def _consume_whitespace(self, text: str) -> None:
+        """Eats all whitespace found until there's nothing left.
+        """
+        current_position = self.position
+        current_character = text[current_position]
+        while True:
+            if not current_character.isspace():
+                break
+
+            current_position += 1
+            try:
+                current_character = text[current_position]
+            except IndexError:
+                # If we've hit EOF we'll hit this exception.
+                break
+
+        self.position = current_position
+
 
     def _next_token(self) -> Token:
         """This is the method that calls the token class and breaks the input
@@ -115,11 +135,21 @@ class Interpreter:
         # Check to make sure we haven't run out of characters. If we have,
         # return an EOF token.
         if self.position > len(text) - 1:
-            # NOTE: forgot the return statement and test caughtn it.
+            # NOTE: forgot the return statement and test caught it.
             return Token(EOF, None)
 
         # Get the character that's at the current position.
         current_character = text[self.position]
+
+        if current_character.isspace():
+            self._consume_whitespace(text)
+
+            if self.position > len(text) - 1:
+                return Token(EOF, None)
+            # After we've eatten all the bab whitespace lets actually grab a
+            # symantically meaningful character.
+            current_character = text[self.position]
+
 
         if current_character.isdigit():
             return self._tokenize_integer(text)
@@ -128,18 +158,22 @@ class Interpreter:
             self.position += 1
             return Token(PLUS, current_character)
 
+        if current_character == "-":
+            self.position += 1
+            return Token(MINUS, current_character)
+
         # if this method is called then an error will be raised.
         self._error()
 
-    def _consume_token(self, token_type):
+    def _consume_token(self, matching_tokens):
         """consume_token checks the current tokens type with the token type
         that's passed in. If they don't match then an error is raised.
 
         args:
-            token_type: You can think of the token_type as the token that is
-                next expected and should be found.
+            matching_tokens: A list of tokens to be tests against to see if
+                the current token is any of the expected tokens.
         """
-        if self.current_token.type == token_type:
+        if self.current_token.type in matching_tokens:
             self.current_token = self._next_token()
         else:
             # Mistake: Accidently named this function self.error()
@@ -159,8 +193,9 @@ class Interpreter:
         self._consume_token(INTEGER)
 
         # The next expected Token is a PLUS
-        OP = self.current_token
-        self._consume_token(PLUS)
+        op = self.current_token
+        expected_operations = [PLUS, MINUS]
+        self._consume_token(expected_operations)
 
         # Lastly we expect another integer for addition to work.
         right = self.current_token
@@ -171,7 +206,12 @@ class Interpreter:
 
         # Since we now have INTEGER PLUS INTEGER we can add both integer
         # values together.
-        result = left.value + right.value
+        if op.type == PLUS:
+            result = left.value + right.value
+        elif op.type == MINUS:
+            result = left.value - right.value
+        else:
+            self._error()
         return result
 
 
