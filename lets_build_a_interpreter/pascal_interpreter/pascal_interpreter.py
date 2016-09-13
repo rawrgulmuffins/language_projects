@@ -84,25 +84,24 @@ class Interpreter:
 
         # First we check to see if there are other digits in the int.
         first_position = self.position
-        current_character = text[self.position]
+        current_position = self.position
+        current_character = text[current_position]
 
         while True:
-
+            print("char:{} , position: {}".format(current_character, current_position))
             if not current_character.isdigit():
-                # We want to ensure that we only increment the text position if
-                # we find a digit. Otherwise we might eat a not integer token.
                 break
 
+            current_position += 1
             try:
-                # Check to see if there's a following character
-                current_character = text[self.position]
-                self.position += 1
+                current_character = text[current_position]
             except IndexError:
-                # One of two potential exit conditions. This one is if we hit
-                # the end of text.
+                # If we've hit EOF we'll hit this exception.
                 break
 
-        value = int(text[first_position: self.position])
+        # Current position should be EOF or a digit.
+        self.position = current_position 
+        value = int(text[first_position: current_position])
         return Token(INTEGER, value)
 
     def _next_token(self) -> Token:

@@ -51,11 +51,18 @@ def test_eof_token_after_int():
 def test_consume_valid_token():
     input_text = "1+1"
     interpreter = p_interp.Interpreter(text=input_text)
+
     # Mistake: Since _next_token changes the state of position you can't just
     # interpreter.current_token = p_interp.Token(p_interp.INTEGER, 1)
     # You have to call _next_token.
+
     interpreter.current_token = interpreter._next_token()
+
+    # Mistake 2: this unit test caught me breaking single digit integers when
+    # I added double digit.
+
     interpreter._consume_token(p_interp.INTEGER)
+    assert interpreter.position == 2 # Make sure we haven't skipped past the +
     assert interpreter.current_token.type == p_interp.PLUS
 
 
