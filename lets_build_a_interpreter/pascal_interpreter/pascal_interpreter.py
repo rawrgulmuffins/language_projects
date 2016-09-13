@@ -4,7 +4,9 @@ found at https://ruslanspivak.com/lsbasi-part1/
 
 This code base was build and tested in Python3.5.
 """
-INTEGER, EOF, PLUS = 'INTEGER', 'PLUS', 'EOF'
+# NOTE: So when I made this I made the mistake of switching the token strings.
+# My "test_eof_at_end_of_line" test found the error.
+INTEGER, EOF, PLUS = 'INTEGER', 'EOF', 'PLUS'
 
 class InterpreterError(Exception):
     """Default exception for the interpter. Only thrown as a last resort. 
@@ -61,28 +63,129 @@ class Interpreter:
         # NOTE: no verification at this point in time.
         self.text = text
         # position of the index on self.text
-        self.pos = 0
+        self.position = 0
         # current token
         self.current_token = None
 
-    def _error(self):
+    def _error(self) -> None:
         """
         """
         # NOTE: force students to test these kinds of functions so they catch
         # things like mis-namings.
         raise InterpreterError()
 
-    def _next_token(self):
+    def _tokenize_integer(self, text: str) -> Token:
+        """If have found a single digit then this helper function will read
+        characters until the end of the integer is found.
         """
+        # NOTE: The first couple attempts at this function were very messed up
+        # and screwed up other functionality in the interpreter that my tests
+        # caught.
+
+        # First we check to see if there are other digits in the int.
+        first_position = self.position
+        current_character = text[self.position]
+
+        while True:
+
+            if not current_character.isdigit():
+                # We want to ensure that we only increment the text position if
+                # we find a digit. Otherwise we might eat a not integer token.
+                break
+
+            try:
+                # Check to see if there's a following character
+                current_character = text[self.position]
+                self.position += 1
+            except IndexError:
+                # One of two potential exit conditions. This one is if we hit
+                # the end of text.
+                break
+
+        value = int(text[first_position: self.position])
+        return Token(INTEGER, value)
+
+    def _next_token(self) -> Token:
+        """This is the method that calls the token class and breaks the input
+        text into a set of tokens. This set of operations is called lexical
+        analyization.
         """
-        pass
+        text = self.text
+
+        # Check to make sure we haven't run out of characters. If we have,
+        # return an EOF token.
+        if self.position > len(text) - 1:
+            # NOTE: forgot the return statement and test caughtn it.
+            return Token(EOF, None)
+
+        # Get the character that's at the current position.
+        current_character = text[self.position]
+
+        if current_character.isdigit():
+            return self._tokenize_integer(text)
+
+        if current_character == "+":
+            self.position += 1
+            return Token(PLUS, current_character)
+
+        # if this method is called then an error will be raised.
+        self._error()
 
     def _consume_token(self, token_type):
-        """
-        """
-        pass
+        """consume_token checks the current tokens type with the token type
+        that's passed in. If they don't match then an error is raised.
 
-    def _parse(self):
+        args:
+            token_type: You can think of the token_type as the token that is
+                next expected and should be found.
         """
+        if self.current_token.type == token_type:
+            self.current_token = self._next_token()
+        else:
+            # Mistake: Accidently named this function self.error()
+            self._error()
+
+    def parse(self):
+        """parse consumes all of the tokens found in self.text looking for a
+        set of expected tokens. Currently supported token sets are
+
+        INTEGER PLUS INTEGER
         """
-        pass
+        # Just take whatever the first token is.
+        self.current_token = self._next_token()
+
+        # We expect that the first token was an integer.
+        left = self.current_token
+        self._consume_token(INTEGER)
+
+        # The next expected Token is a PLUS
+        OP = self.current_token
+        self._consume_token(PLUS)
+
+        # Lastly we expect another integer for addition to work.
+        right = self.current_token
+        self._consume_token(INTEGER)
+
+        # Lastly we expect to run out of input.
+        self._consume_token(EOF)
+
+        # Since we now have INTEGER PLUS INTEGER we can add both integer
+        # values together.
+        result = left.value + right.value
+        return result
+
+
+def main():
+    while True:
+        try:
+            text = input("calc>")
+        except EOFError:
+            break
+        if not text:
+            continue
+        interpreter = Interpreter(text)
+        result = interpreter.parse()
+        print(result)
+
+if __name__ == "__main__":
+    main()
