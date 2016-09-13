@@ -72,7 +72,10 @@ class Interpreter:
         """
         # NOTE: force students to test these kinds of functions so they catch
         # things like mis-namings.
-        raise InterpreterError()
+        raise InterpreterError(
+            "input_text == {}, current_position == {}".format(
+                self.text,
+                self.position))
 
     def _tokenize_integer(self, text: str) -> Token:
         """If have found a single digit then this helper function will read
@@ -88,7 +91,6 @@ class Interpreter:
         current_character = text[current_position]
 
         while True:
-            print("char:{} , position: {}".format(current_character, current_position))
             if not current_character.isdigit():
                 break
 
@@ -100,9 +102,28 @@ class Interpreter:
                 break
 
         # Current position should be EOF or a digit.
-        self.position = current_position 
+        self.position = current_position
         value = int(text[first_position: current_position])
         return Token(INTEGER, value)
+
+    def _consume_whitespace(self, text: str) -> None:
+        """Eats all whitespace found until there's nothing left.
+        """
+        current_position = self.position
+        current_character = text[current_position]
+        while True:
+            if not current_character.isspace():
+                break
+
+            current_position += 1
+            try:
+                current_character = text[current_position]
+            except IndexError:
+                # If we've hit EOF we'll hit this exception.
+                break
+
+        self.position = current_position
+
 
     def _next_token(self) -> Token:
         """This is the method that calls the token class and breaks the input
@@ -114,11 +135,21 @@ class Interpreter:
         # Check to make sure we haven't run out of characters. If we have,
         # return an EOF token.
         if self.position > len(text) - 1:
-            # NOTE: forgot the return statement and test caughtn it.
+            # NOTE: forgot the return statement and test caught it.
             return Token(EOF, None)
 
         # Get the character that's at the current position.
         current_character = text[self.position]
+
+        if current_character.isspace():
+            self._consume_whitespace(text)
+
+            if self.position > len(text) - 1:
+                return Token(EOF, None)
+            # After we've eatten all the bab whitespace lets actually grab a
+            # symantically meaningful character.
+            current_character = text[self.position]
+
 
         if current_character.isdigit():
             return self._tokenize_integer(text)

@@ -81,6 +81,34 @@ def test_parse_addition():
     interpreter = p_interp.Interpreter(text=input_text)
     assert interpreter.parse() == 2
 
+def test_parse_addition_with_internal_spaces():
+    # NOTE: I misnamed this test function. Another function had the same name
+    # For a little while and as such this test was never ran.
+    input_text = "1 +1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    assert interpreter.parse() == 2
+
+def test_parse_addition_with_trailing_spaces():
+    # NOTE: I misnamed this test function. Another function had the same name
+    # For a little while and as such this test was never ran.
+    input_text = "1+1 "
+    interpreter = p_interp.Interpreter(text=input_text)
+    assert interpreter.parse() == 2
+
+def test_parse_addition_with_pre_spaces():
+    # NOTE: I misnamed this test function. Another function had the same name
+    # For a little while and as such this test was never ran.
+    input_text = " 1+1"
+    interpreter = p_interp.Interpreter(text=input_text)
+    assert interpreter.parse() == 2
+
+def test_parse_addition_with_all_combinations_spaces():
+    # NOTE: I misnamed this test function. Another function had the same name
+    # For a little while and as such this test was never ran.
+    input_text = " 1 + 1 "
+    interpreter = p_interp.Interpreter(text=input_text)
+    assert interpreter.parse() == 2
+
 
 def test_parse_addition_multiple_digits():
     input_text = "12+1"
