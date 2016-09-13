@@ -6,7 +6,7 @@ This code base was build and tested in Python3.5.
 """
 # NOTE: So when I made this I made the mistake of switching the token strings.
 # My "test_eof_at_end_of_line" test found the error.
-INTEGER, EOF, PLUS = 'INTEGER', 'EOF', 'PLUS'
+INTEGER, EOF, PLUS, MINUS = "INTEGER", "EOF", "PLUS", "MINUS"
 
 class InterpreterError(Exception):
     """Default exception for the interpter. Only thrown as a last resort. 
@@ -158,18 +158,22 @@ class Interpreter:
             self.position += 1
             return Token(PLUS, current_character)
 
+        if current_character == "-":
+            self.position += 1
+            return Token(MINUS, current_character)
+
         # if this method is called then an error will be raised.
         self._error()
 
-    def _consume_token(self, token_type):
+    def _consume_token(self, matching_tokens):
         """consume_token checks the current tokens type with the token type
         that's passed in. If they don't match then an error is raised.
 
         args:
-            token_type: You can think of the token_type as the token that is
-                next expected and should be found.
+            matching_tokens: A list of tokens to be tests against to see if
+                the current token is any of the expected tokens.
         """
-        if self.current_token.type == token_type:
+        if self.current_token.type in matching_tokens:
             self.current_token = self._next_token()
         else:
             # Mistake: Accidently named this function self.error()
@@ -189,8 +193,9 @@ class Interpreter:
         self._consume_token(INTEGER)
 
         # The next expected Token is a PLUS
-        OP = self.current_token
-        self._consume_token(PLUS)
+        op = self.current_token
+        expected_operations = [PLUS, MINUS]
+        self._consume_token(expected_operations)
 
         # Lastly we expect another integer for addition to work.
         right = self.current_token
@@ -201,7 +206,12 @@ class Interpreter:
 
         # Since we now have INTEGER PLUS INTEGER we can add both integer
         # values together.
-        result = left.value + right.value
+        if op.type == PLUS:
+            result = left.value + right.value
+        elif op.type == MINUS:
+            result = left.value - right.value
+        else:
+            self._error()
         return result
 
 
