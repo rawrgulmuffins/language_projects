@@ -6,7 +6,8 @@ This code base was build and tested in Python3.5.
 """
 # NOTE: So when I made this I made the mistake of switching the token strings.
 # My "test_eof_at_end_of_line" test found the error.
-INTEGER, EOF, PLUS, MINUS = "INTEGER", "EOF", "PLUS", "MINUS"
+INTEGER, EOF = "INTEGER", "EOF"
+PLUS, MINUS, TIMES, DIVIDED_BY = ("PLUS", "MINUS", "TIMES", "DIVIDED_BY")
 
 class InterpreterError(Exception):
     """Default exception for the interpter. Only thrown as a last resort. 
@@ -154,6 +155,14 @@ class Interpreter:
         if current_character.isdigit():
             return self._tokenize_integer(text)
 
+        if current_character == "*":
+            self.position += 1
+            return Token(TIMES, current_character)
+
+        if current_character == "/":
+            self.position += 1
+            return Token(DIVIDED_BY, current_character)
+
         if current_character == "+":
             self.position += 1
             return Token(PLUS, current_character)
@@ -194,7 +203,7 @@ class Interpreter:
 
         # The next expected Token is a PLUS
         op = self.current_token
-        expected_operations = [PLUS, MINUS]
+        expected_operations = [PLUS, MINUS, TIMES, DIVIDED_BY]
         self._consume_token(expected_operations)
 
         # Lastly we expect another integer for addition to work.
@@ -206,7 +215,16 @@ class Interpreter:
 
         # Since we now have INTEGER PLUS INTEGER we can add both integer
         # values together.
-        if op.type == PLUS:
+        # NOTE: when I added the divided by operation symmantics I copied the
+        #       multiplication if statement and didn't change it to an elif.
+        #       My previous multiplication unit tests pointed out the error.
+        if op.type == TIMES:
+            result = left.value * right.value
+        elif op.type == DIVIDED_BY:
+            #  NOTE: When I first made this function I accidently did floating
+            #        point division and my unit test cought it.
+            result = left.value // right.value
+        elif op.type == PLUS:
             result = left.value + right.value
         elif op.type == MINUS:
             result = left.value - right.value
