@@ -10,15 +10,20 @@ INTEGER, EOF = "INTEGER", "EOF"
 PLUS, MINUS, TIMES, DIVIDED_BY = ("PLUS", "MINUS", "TIMES", "DIVIDED_BY")
 
 class InterpreterError(Exception):
-    """Default exception for the interpter. Only thrown as a last resort. 
+    """Default exception for the interpter. Only thrown as a last resort.
     Normally this means a more strict exception wasn't found. If you see this
     kind of exception in the wild consider putting in an enchancement request
     for a more narrow exception type for the given erroneous input.
     """
     pass
 
+# pylint: disable=too-few-public-methods
 class Token:
+    """A class that contains a type and a value. Foundational building block
+    of the language typing system.
+    """
 
+    # pylint: disable=redefined-builtin
     def __init__(self, type, value):
         """Simple creation method used to build Tokens.
 
@@ -26,7 +31,7 @@ class Token:
             type: A name used to associate what kind and parameters of data
                 that will be present in the Token object.
             value: A value that's hopefully valid for the passed in data type.
-                example is that INTEGER type is associated with 
+                example is that INTEGER type is associated with
                 -1, 0, 1, 2, ...
 
         NOTE: no verification of data is currently being done. Later versions
@@ -51,13 +56,16 @@ class Token:
         variables.
         """
         return "Token(type={type}, value={value})".format(
-                type=self.type,
-                value=self.value,
-            )
+            type=self.type,
+            value=self.value,
+        )
 
 class Interpreter:
+    """Class that reads text, which should contain valid pascal programs,
+    lexes and parsers then produces line by line results.
+    """
 
-    def __init__(self, text):
+    def __init__(self, text: str):
         """
         """
         # Text to be interpreted
@@ -125,13 +133,13 @@ class Interpreter:
 
         self.position = current_position
 
-
     def _next_token(self) -> Token:
         """This is the method that calls the token class and breaks the input
         text into a set of tokens. This set of operations is called lexical
         analyization.
         """
         text = self.text
+        return_token = None
 
         # Check to make sure we haven't run out of characters. If we have,
         # return an EOF token.
@@ -153,28 +161,30 @@ class Interpreter:
 
 
         if current_character.isdigit():
-            return self._tokenize_integer(text)
+            return_token = self._tokenize_integer(text)
 
         if current_character == "*":
             self.position += 1
-            return Token(TIMES, current_character)
+            return_token = Token(TIMES, current_character)
 
         if current_character == "/":
             self.position += 1
-            return Token(DIVIDED_BY, current_character)
+            return_token = Token(DIVIDED_BY, current_character)
 
         if current_character == "+":
             self.position += 1
-            return Token(PLUS, current_character)
+            return_token = Token(PLUS, current_character)
 
         if current_character == "-":
             self.position += 1
-            return Token(MINUS, current_character)
+            return_token = Token(MINUS, current_character)
 
-        # if this method is called then an error will be raised.
-        self._error()
+        if return_token is None:
+            self._error()
+        else:
+            return return_token
 
-    def _consume_token(self, matching_tokens):
+    def _consume_token(self, matching_tokens: Token) -> None:
         """consume_token checks the current tokens type with the token type
         that's passed in. If they don't match then an error is raised.
 
@@ -188,7 +198,8 @@ class Interpreter:
             # Mistake: Accidently named this function self.error()
             self._error()
 
-    def parse(self):
+    # pylint: disable=invalid-name
+    def parse(self) -> any:
         """parse consumes all of the tokens found in self.text looking for a
         set of expected tokens. Currently supported token sets are
 
@@ -234,13 +245,14 @@ class Interpreter:
 
             left = Token(INTEGER, result)
 
-            # If we run out of input 
+            # If we run out of input
             if self.current_token.type == EOF:
                 self._consume_token(EOF)
                 return result
 
 
 def main():
+    """REPL loop"""
     while True:
         try:
             text = input("calc>")
