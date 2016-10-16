@@ -197,40 +197,47 @@ class Interpreter:
         # Just take whatever the first token is.
         self.current_token = self._next_token()
 
-        # We expect that the first token was an integer.
         left = self.current_token
         self._consume_token(INTEGER)
 
-        # The next expected Token is a PLUS
-        op = self.current_token
-        expected_operations = [PLUS, MINUS, TIMES, DIVIDED_BY]
-        self._consume_token(expected_operations)
+        result = None
+        while True:
+            op = self.current_token
+            expected_operations = [PLUS, MINUS, TIMES, DIVIDED_BY]
+            self._consume_token(expected_operations)
 
-        # Lastly we expect another integer for addition to work.
-        right = self.current_token
-        self._consume_token(INTEGER)
+            right = self.current_token
+            self._consume_token(INTEGER)
 
-        # Lastly we expect to run out of input.
-        self._consume_token(EOF)
+            if result is None and op.type in (TIMES, DIVIDED_BY):
+                # multiplying or dividing 0 is bad times.
+                result = 1
 
-        # Since we now have INTEGER PLUS INTEGER we can add both integer
-        # values together.
-        # NOTE: when I added the divided by operation symmantics I copied the
-        #       multiplication if statement and didn't change it to an elif.
-        #       My previous multiplication unit tests pointed out the error.
-        if op.type == TIMES:
-            result = left.value * right.value
-        elif op.type == DIVIDED_BY:
-            #  NOTE: When I first made this function I accidently did floating
-            #        point division and my unit test cought it.
-            result = left.value // right.value
-        elif op.type == PLUS:
-            result = left.value + right.value
-        elif op.type == MINUS:
-            result = left.value - right.value
-        else:
-            self._error()
-        return result
+
+            # Since we now have INTEGER PLUS INTEGER we can add both integer
+            # values together.
+            # NOTE: when I added the divided by operation symmantics I copied the
+            #       multiplication if statement and didn't change it to an elif.
+            #       My previous multiplication unit tests pointed out the error.
+            if op.type == TIMES:
+                result = left.value * right.value
+            elif op.type == DIVIDED_BY:
+                #  NOTE: When I first made this function I accidently did floating
+                #        point division and my unit test cought it.
+                result = left.value // right.value
+            elif op.type == PLUS:
+                result = left.value + right.value
+            elif op.type == MINUS:
+                result = left.value - right.value
+            else:
+                self._error()
+
+            left = Token(INTEGER, result)
+
+            # If we run out of input 
+            if self.current_token.type == EOF:
+                self._consume_token(EOF)
+                return result
 
 
 def main():
