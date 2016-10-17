@@ -12,6 +12,8 @@ def test_no_defaults():
     with pytest.raises(TypeError):
         augur.Token()
 
+# NOTE: I refactored return_token in chapter 2's assignments and this broke
+#       my token tests.
 def test_known_type():
     # There's no valid defaults at the moment.
     token = augur.Token(type=augur.INTEGER, value=2)
