@@ -17,6 +17,13 @@ class InterpreterError(Exception):
     """
     pass
 
+class ParenthesisrError(Exception):
+    """Exception Thrown when a open parenthesis doesn't have a closing pair
+    or a closing parenthesis is found without an open pair on the stack.
+
+    """
+    pass
+
 # pylint: disable=too-few-public-methods
 class Token:
     """A class that contains a type and a value. Foundational building block
