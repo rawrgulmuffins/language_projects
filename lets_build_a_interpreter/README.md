@@ -13,22 +13,22 @@ then
 
 1. Tokens
 2. Tokens `__repr__` and `__str__`
-3. Blank Program Parsers
-4. Interpreter Error Method
-5. EOF token lexes
-    * `-` token lexes
-    *  `+` token lexes
-6 Single digit integer token lexes
-7. consume validates expected token
-8. consume errors on unexpected token
-9. consume produces EOF if no more tokens
-10. `1+1` lexes and parsers to 2
-11. multi-digit integers are lexed correctly
-12. whitespace is ignored until new token found.
-13. `*` lexes and parsers
-14. `/` lexes and parsers
-15. Arbitrary number of operations lex and parse correctly.
-16. `()` lexes and parsers
-17. parens around signle statement lexes and parsers
-18. parens can arbitrarily nest
-19. Parens change the order of operations.
+3. Interpreter Error Method
+4. EOF token lexes
+5. `-` token lexes
+6. `+` token lexes
+7. Blank Program Parsers
+9. Single digit integer token lexes
+10. consume validates expected token
+11. consume errors on unexpected token
+12. consume produces EOF if no more tokens
+13. `1+1` lexes and parsers to 2
+14. multi-digit integers are lexed correctly
+15. whitespace is ignored until new token found.
+16. `*` lexes and parsers
+17. `/` lexes and parsers
+18. Arbitrary number of operations lex and parse correctly.
+19. `()` lexes and parsers
+20. parens around signle statement lexes and parsers
+21. parens can arbitrarily nest
+22. Parens change the order of operations.
